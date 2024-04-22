@@ -8,6 +8,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         return true
     }
+    
 
     // MARK: UISceneSession Lifecycle
 
@@ -24,3 +25,4 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         didDiscardSceneSessions sceneSessions: Set<UISceneSession>
     ) {}
 }
+
