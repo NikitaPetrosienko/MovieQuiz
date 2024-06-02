@@ -54,8 +54,6 @@ final class StatisticService: StatisticServiceProtocol {
         storage.set(currentCorrect, forKey: Keys.correctAnswers.rawValue)
         storage.set(currentTotal, forKey: Keys.totalQuestions.rawValue)
         
-        gamesCount += 1
-        
         let newResult = GameResult(correct: count, total: amount, date: Date())
         let bestResult = bestGame
         if newResult.isBetterThan(bestResult) {
