@@ -7,18 +7,18 @@ class AlertPresenter {
         self.viewController = viewController
     }
 
-    func showResultAlert(title: String, message: String, buttonText: String, completion: @escaping () -> Void) {
+    func showResultAlert(result: AlertModel) {
         let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert
-        )
+            title: result.title,
+            message: result.message,
+            preferredStyle: .alert)
         
-        let action = UIAlertAction(title: buttonText, style: .default) { _ in
-            completion()
+        let action = UIAlertAction(title: result.buttonText, style: .default) { _ in
+            result.completion()
         }
         
         alert.addAction(action)
+        
         viewController?.present(alert, animated: true, completion: nil)
     }
 }
