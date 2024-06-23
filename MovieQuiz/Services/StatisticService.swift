@@ -59,5 +59,6 @@ final class StatisticService: StatisticServiceProtocol {
         if newResult.isBetterThan(bestResult) {
             bestGame = newResult
         }
+        gamesCount += 1
     }
 }

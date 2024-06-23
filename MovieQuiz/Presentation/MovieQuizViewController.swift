@@ -80,6 +80,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func showQuizResults() {
+        statisticService?.store(correct: correctAnswers, total: questionsAmount)
+
         let gamesCount = statisticService?.gamesCount ?? 0
         let bestGame = statisticService?.bestGame
         let totalAccuracy = statisticService?.totalAccuracy ?? 0.0
@@ -105,7 +107,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func resetQuiz() {
         currentQuestionIndex = 0
         correctAnswers = 0
-        statisticService?.store(correct: correctAnswers, total: questionsAmount)
         questionFactory?.requestNextQuestion()
     }
 
