@@ -2,13 +2,12 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
-    private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    private let questionsAmount = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticServiceProtocol?
     private var alertPresenter: AlertPresenter?
+    private let presenter = MovieQuizPresenter()
 
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
@@ -33,7 +32,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else { return }
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
@@ -65,7 +64,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let action = UIAlertAction(title: "Попробовать еще раз", style: .default) { [weak self] _ in
             guard let self = self else { return }
 
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswers = 0
 
             self.questionFactory?.requestNextQuestion()
@@ -78,17 +77,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         present(alert, animated: true, completion: nil)
     }
 
-    
-
-    
-
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-    }
-
     private func show(quiz viewModel: QuizStepViewModel) {
         textLabel.text = viewModel.question
         imageView.image = viewModel.image
@@ -96,7 +84,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func showQuizResults() {
-        statisticService?.store(correct: correctAnswers, total: questionsAmount)
+        statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
 
         let gamesCount = statisticService?.gamesCount ?? 0
         let bestGame = statisticService?.bestGame
@@ -104,7 +92,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
         let bestGameDate = bestGame?.date.formatted(date: .numeric, time: .shortened) ?? ""
         let message = """
-        Ваш результат: \(correctAnswers)/\(questionsAmount)
+        Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)
         Количество сыгранных квизов: \(gamesCount)
         Рекорд: \(bestGame?.correct ?? 0)/\(bestGame?.total ?? 0) (\(bestGameDate))
         Средняя точность: \(String(format: "%.2f", totalAccuracy))%
@@ -123,8 +111,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func resetQuiz() {
-        currentQuestionIndex = 0
         correctAnswers = 0
+        presenter.resetQuestionIndex()
         questionFactory?.requestNextQuestion()
     }
     
@@ -149,10 +137,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion() {
             showQuizResults()
         } else {
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
     }
@@ -164,8 +152,4 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         checkAnswer(false)
     }
-
-    
-
-   
 }
