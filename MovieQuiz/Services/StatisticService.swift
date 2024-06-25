@@ -9,16 +9,6 @@ final class StatisticService: StatisticServiceProtocol {
         case bestGame
         case gamesCount
     }
-    
-    struct GameResult: Codable, Equatable {
-        let correct: Int
-        let total: Int
-        let date: Date
-        
-        func isBetterThan(_ another: GameResult) -> Bool {
-            return correct > another.correct || (correct == another.correct && total < another.total)
-        }
-    }
 
     var gamesCount: Int {
         get { storage.integer(forKey: Keys.gamesCount.rawValue) }
@@ -53,7 +43,7 @@ final class StatisticService: StatisticServiceProtocol {
         currentTotal += amount
         storage.set(currentCorrect, forKey: Keys.correctAnswers.rawValue)
         storage.set(currentTotal, forKey: Keys.totalQuestions.rawValue)
-        
+
         let newResult = GameResult(correct: count, total: amount, date: Date())
         let bestResult = bestGame
         if newResult.isBetterThan(bestResult) {

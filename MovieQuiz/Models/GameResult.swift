@@ -1,12 +1,11 @@
 import Foundation
 
-struct GameResult {
+struct GameResult: Codable, Equatable {
     let correct: Int
     let total: Int
     let date: Date
 
-    // метод сравнения по количеству верных ответов
     func isBetterThan(_ another: GameResult) -> Bool {
-        correct > another.correct
+        return correct > another.correct || (correct == another.correct && total < another.total)
     }
 }
